@@ -10,38 +10,40 @@ function requestHandler(req, res) {
     res.write("<html>");
     res.write("<head> <title>Form</title> </head>");
     res.write(
-      "<body> <form action='/message' method='POST'> <input type='text' name='fname'> <input type='text' name='lname'> <button type='submit'>Send</button> </form> </body>"
+      "<body> <h1>User Form</h1> <form action='/create-user' method='POST'> <input type='text' name='fname' placeholder='Enter your first name'> <input type='text' name='lname' placeholder='Enter your second name'> <button type='submit'>Send</button> </form> <div> <a href='/users'>Users</a> </div> </body>"
     );
     res.write("</html>");
 
-    return res.end();
+    res.end();
   }
 
-  if (url === "/message" && method === "POST") {
+  if (url === "/users") {
+    res.setHeader("Content-Type", "text/html");
+    res.write("<html>");
+    res.write("<head> <title>Users</title> </head>");
+    res.write(
+      "<body> <h1>Users</h1> <ul> <li>Sachin</li> <li>Shiva</li> <li>Sanvi</li> </ul> <div> <a href='/'>Go back</a> </div> </body>"
+    );
+    res.write("</html>");
+
+    res.end();
+  }
+
+  if (url === "/create-user" && method === "POST") {
     const body = [];
     req.on("data", (chunk) => {
       body.push(chunk);
-      console.log(body);
     });
 
     req.on("end", () => {
       const parsedBody = Buffer.concat(body).toString();
-      let data = parsedBody.split("=");
-      console.log(data);
       fs.writeFileSync("text.txt", parsedBody);
     });
 
     res.statusCode = 302;
     res.setHeader("Location", "/");
-    return res.end();
+    res.end();
   }
-
-  res.setHeader("Content-Type", "text/html");
-  res.write("<html>");
-  res.write("<head> <title>Hello Node.js</title> </head>");
-  res.write("<body><h1>Hello World</h1></body>");
-  res.write("</html>");
-  res.end();
 }
 
 module.exports = { requestHandler, text: "Some hard text" };
